@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 产品作品集 · 2026 · 佟兵盈</title>
+<meta name="description" content="AI 产品作品集：飞渡大模型空间智能、ToB 合作案例查询 AI Agent、看房小助手、自动化工具集。四个项目，四种场景。">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+/* =========================================================
+   设计 Token：咖啡色统一体系
+   espresso 深咖 = 底色；caramel 焦糖 = 强调；latte 拿铁 = 文字
+   ========================================================= */
+:root{
+  --espresso-950:#140A05;
+  --espresso-900:#1B0E07;
+  --espresso-800:#261309;
+  --espresso-700:#331B0E;
+  --coffee-600:#4A2A15;
+  --coffee-500:#5F371B;
+  --mocha-400:#8A5C38;
+  --caramel-300:#C98E56;
+  --caramel-200:#DFA76E;
+  --latte-100:#F5EADA;
+  --latte-200:#EBDCC7;
+  --cream-150:#F0E3D0;
+  --muted:#B99E84;
+  --line:rgba(245,234,218,0.13);
+  --card:rgba(38,19,9,0.55);
+  --card-solid:#2A180D;
+  --font-display:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",serif;
+  --font-body:"Noto Sans SC","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --font-en:"Cormorant Garamond","Noto Serif SC","Georgia","Times New Roman",serif;
+  --shadow:0 18px 50px rgba(10,5,2,0.55);
+}
+
+/* =========================================================
+   基础 & 复位
+   ========================================================= */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;height:100%;overflow:hidden;}
+body{
+  font-family:var(--font-body);
+  color:var(--latte-100);
+  background:var(--espresso-950);
+  line-height:1.7;
+  overflow:hidden;
+  height:100%;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+::selection{background:var(--caramel-300);color:var(--espresso-950);}
+
+/* =========================================================
+   流体烟雾背景（固定层 + 视差层）
+   ========================================================= */
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;}
+.bg-base{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(120% 90% at 20% 0%, #2E1A0D 0%, transparent 55%),
+    radial-gradient(110% 100% at 85% 20%, #331C10 0%, transparent 50%),
+    linear-gradient(115deg,
+      #140A05 0%,
+      #3A2012 18%,
+      #7A4A26 34%,
+      #2E1A0D 50%,
+      #6B3F20 66%,
+      #24130A 84%,
+      #140A05 100%);
+  background-size:400% 400%;
+  animation:
+    bgDrift 46s ease-in-out infinite alternate,
+    bgPos 9s ease-in-out infinite alternate;
+}
+@keyframes bgDrift{
+  0%{transform:translate3d(0,0,0) scale(1);filter:saturate(0.95) brightness(1);}
+  50%{transform:translate3d(-2%,1.5%,0) scale(1.04);filter:saturate(1.06) brightness(1.05);}
+  100%{transform:translate3d(2%,-1%,0) scale(1.02);filter:saturate(0.98) brightness(1.02);}
+}
+@keyframes bgPos{
+  0%{background-position:0% 0%;}
+  45%{background-position:78% 32%;}
+  100%{background-position:100% 62%;}
+}
+/* 颜色流动光层：焦糖光影在背景上明显流转 */
+.bg-colorflow{
+  position:absolute;inset:-18%;
+  background:
+    radial-gradient(52% 44% at 30% 40%, rgba(222,167,110,0.22) 0%, transparent 62%),
+    radial-gradient(46% 52% at 72% 58%, rgba(160,99,52,0.18) 0%, transparent 58%),
+    radial-gradient(40% 46% at 48% 82%, rgba(201,142,86,0.14) 0%, transparent 60%);
+  background-size:180% 180%;
+  mix-blend-mode:screen;
+  opacity:0;
+  transition:opacity 1.6s ease;
+  animation:colorFlow 9s ease-in-out infinite alternate;
+}
+.is-on .bg-colorflow{opacity:1;}
+@keyframes colorFlow{
+  0%{transform:translate3d(-3.5%,-2.5%,0) scale(1);background-position:0% 0%;}
+  40%{transform:translate3d(3%,2%,0) scale(1.12);background-position:85% 45%;}
+  100%{transform:translate3d(-2%,3.5%,0) scale(0.97);background-position:20% 90%;}
+}
+/* 焦糖色光团：慢速漂移，构成"咖啡烟雾"主体 */
+.blob{
+  position:absolute;border-radius:50%;
+  filter:blur(70px);
+  will-change:transform;
+  opacity:0;
+  animation-name:blobFlow, hueFlow;
+  animation-timing-function:ease-in-out;
+  animation-iteration-count:infinite;
+  animation-direction:alternate;
+}
+@keyframes hueFlow{
+  0%{filter:blur(70px) hue-rotate(-16deg) saturate(1);}
+  50%{filter:blur(70px) hue-rotate(12deg) saturate(1.22) brightness(1.06);}
+  100%{filter:blur(70px) hue-rotate(-4deg) saturate(1.05);}
+}
+.blob.is-on{opacity:1;}
+@keyframes blobFlow{
+  0%{translate:0 0; scale:1; rotate:0deg;}
+  33%{translate:6% -7%; scale:1.18; rotate:18deg;}
+  66%{translate:-5% 5%; scale:0.92; rotate:-12deg;}
+  100%{translate:3% -3%; scale:1.08; rotate:6deg;}
+}
+.b-blob-a{width:62vmax;height:62vmax;left:-18vmax;top:-22vmax;
+  background:radial-gradient(circle, rgba(160,99,52,0.5) 0%, rgba(120,68,32,0.24) 45%, transparent 70%);
+  animation-duration:38s,15s;}
+.b-blob-b{width:55vmax;height:55vmax;right:-20vmax;top:8%;
+  background:radial-gradient(circle, rgba(201,142,86,0.34) 0%, rgba(150,88,44,0.2) 45%, transparent 70%);
+  animation-duration:52s,15s;animation-delay:-14s;}
+.b-blob-c{width:58vmax;height:58vmax;left:18%;bottom:-30vmax;
+  background:radial-gradient(circle, rgba(108,62,30,0.42) 0%, rgba(70,38,18,0.22) 50%, transparent 72%);
+  animation-duration:44s,15s;animation-delay:-26s;}
+.b-blob-d{width:40vmax;height:40vmax;right:6%;bottom:16%;
+  background:radial-gradient(circle, rgba(214,168,116,0.2) 0%, rgba(160,100,55,0.14) 50%, transparent 70%);
+  animation-duration:60s,15s;animation-delay:-8s;}
+.b-blob-e{width:34vmax;height:34vmax;left:-8vmax;top:42%;
+  background:radial-gradient(circle, rgba(203,142,88,0.16) 0%, transparent 70%);
+  animation-duration:47s,15s;animation-delay:-20s;}
+
+/* 细烟雾丝：高模糊的窄椭圆，似升腾的咖啡蒸汽 */
+.puff{
+  position:absolute;border-radius:50%;
+  filter:blur(56px);
+  background:radial-gradient(ellipse at center, rgba(222,167,110,0.16) 0%, transparent 68%);
+  will-change:transform;
+  opacity:0;
+  animation-name:puffRise, puffHue;
+  animation-timing-function:ease-in-out;
+  animation-iteration-count:infinite;
+  animation-direction:alternate;
+}
+@keyframes puffHue{
+  0%{filter:blur(56px) hue-rotate(-12deg) saturate(1);}
+  100%{filter:blur(56px) hue-rotate(14deg) saturate(1.18);}
+}
+.puff.is-on{opacity:1;}
+@keyframes puffRise{
+  0%{translate:0 0; scale:1 1; rotate:-4deg;}
+  50%{translate:3% -5%; scale:1 1.22; rotate:3deg;}
+  100%{translate:-2% -10%; scale:1 1.05; rotate:-1deg;}
+}
+.p-p1{width:52vmax;height:26vmax;left:-6vmax;top:30%;animation-duration:34s;}
+.p-p2{width:48vmax;height:24vmax;right:-8vmax;top:58%;animation-duration:41s;animation-delay:-17s;}
+.p-p3{width:60vmax;height:28vmax;left:28%;top:-8vmax;animation-duration:37s;animation-delay:-9s;}
+.p-p4{width:44vmax;height:22vmax;left:4%;bottom:-6vmax;animation-duration:45s;animation-delay:-24s;}
+
+/* 颗粒 + 暗角：统一质感 */
+.bg-grain{
+  position:absolute;inset:0;opacity:0.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;
+}
+.bg-vignette{
+  position:absolute;inset:0;
+  background:radial-gradient(120% 100% at 50% 30%, transparent 40%, rgba(12,5,2,0.55) 100%);
+}
+
+/* 滚动进度条 */
+.scroll-progress{
+  position:fixed;top:0;left:0;height:3px;width:0;
+  background:linear-gradient(90deg,var(--caramel-300),var(--caramel-200));
+  z-index:60;
+  box-shadow:0 0 14px rgba(223,167,110,0.6);
+}
+
+/* =========================================================
+   导航
+   ========================================================= */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 48px;
+  transition:background 0.4s ease, padding 0.4s ease, backdrop-filter 0.4s ease;
+}
+.nav.is-scrolled{
+  padding:12px 48px;
+  background:rgba(20,10,5,0.72);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.nav-brand{
+  font-family:var(--font-display);font-weight:700;font-size:1.12rem;
+  letter-spacing:0.12em;color:var(--latte-100);
+  text-decoration:none;
+}
+.nav-brand em{font-style:normal;color:var(--caramel-300);}
+.nav-links{display:flex;gap:30px;list-style:none;}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:0.92rem;
+  letter-spacing:0.06em;transition:color 0.25s ease;
+}
+.nav-links a:hover{color:var(--caramel-200);}
+.nav-toggle{display:none;}
+
+/* =========================================================
+   通用排版
+   ========================================================= */
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;
+  font-family:var(--font-en);
+  font-size:0.86rem;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--caramel-300);margin-bottom:22px;
+}
+.eyebrow::before{content:"";width:34px;height:1px;background:var(--caramel-300);opacity:0.7;}
+.section-title{
+  font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,4.6vw,3.4rem);
+  line-height:1.25;letter-spacing:0.02em;color:var(--latte-100);
+}
+.section-sub{
+  color:var(--muted);font-weight:300;font-size:clamp(1rem,1.8vw,1.2rem);
+  max-width:640px;margin-top:14px;
+}
+.section-head{margin-bottom:64px;}
+
+/* 数字编号（真实序列信息：项目顺序） */
+.section-index{
+  font-family:var(--font-display);font-weight:900;
+  font-size:clamp(4.4rem,10vw,7.6rem);line-height:1;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(201,142,86,0.4);
+  position:absolute;right:0;top:-40px;user-select:none;
+}
+
+/* =========================================================
+   滚动揭示动画
+   ========================================================= */
+.reveal{opacity:0;transform:translateY(34px);transition:opacity 0.9s cubic-bezier(0.16,1,0.3,1),transform 0.9s cubic-bezier(0.16,1,0.3,1);transition-delay:var(--d,0s);}
+.reveal.is-visible{opacity:1;transform:translateY(0);}
+.reveal-fast{transition-duration:0.6s;}
+.reveal-slow{transition-duration:1.2s;}
+/* 章节标题：侧翻页入场（像翻书一样从右翻入） */
+.reveal.flip{
+  opacity:0;
+  transform:perspective(1400px) rotateY(-18deg) translateX(90px);
+  transform-origin:left center;
+  transition:opacity 0.9s ease,transform 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.flip.is-visible{opacity:1;transform:perspective(1400px) rotateY(0deg) translateX(0);}
+
+/* =========================================================
+   翻页引擎：一屏一页，横向侧翻
+   ========================================================= */
+.stage{
+  height:100vh;height:100dvh;display:flex;
+  transition:transform 0.85s cubic-bezier(0.65,0,0.35,1);
+  will-change:transform;
+}
+.page{
+  flex:none;width:100vw;height:100vh;height:100dvh;
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:thin;scrollbar-color:rgba(201,142,86,0.45) transparent;
+}
+.page::-webkit-scrollbar{width:6px;}
+.page::-webkit-scrollbar-thumb{background:rgba(201,142,86,0.45);border-radius:3px;}
+.page::-webkit-scrollbar-track{background:transparent;}
+.divider{display:none;}
+
+/* =========================================================
+   左右翻页箭头 + 页码
+   ========================================================= */
+.nav-arrow{
+  position:fixed;top:50%;transform:translateY(-50%);z-index:80;
+  width:50px;height:50px;border-radius:50%;
+  border:1px solid rgba(201,142,86,0.4);background:rgba(20,10,5,0.55);
+  color:var(--caramel-200);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color 0.3s ease,background 0.3s ease,transform 0.3s ease,opacity 0.3s ease;
+  backdrop-filter:blur(6px);
+}
+.nav-prev{left:18px;}
+.nav-next{right:66px;}
+.nav-arrow:hover{border-color:var(--caramel-300);background:rgba(201,142,86,0.16);transform:translateY(-50%) scale(1.08);}
+.nav-arrow:active{transform:translateY(-50%) scale(0.96);}
+.nav-arrow:disabled{opacity:0;pointer-events:none;}
+.page-count{
+  position:fixed;right:26px;bottom:26px;z-index:80;
+  font-family:var(--font-en);font-size:0.84rem;letter-spacing:0.26em;
+  color:var(--muted);display:flex;align-items:baseline;gap:7px;user-select:none;
+}
+.page-count b{font-size:1.45rem;color:var(--caramel-200);font-weight:500;letter-spacing:0.04em;}
+footer.page{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+}
+footer.page .wrap{width:100%;}
+
+/* =========================================================
+   Hero
+   ========================================================= */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:120px 0 80px;position:relative;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:14px;
+  font-family:var(--font-en);
+  font-size:0.9rem;letter-spacing:0.34em;color:var(--caramel-300);
+  margin-bottom:34px;
+}
+.hero-eyebrow::before{content:"";width:44px;height:1px;background:var(--caramel-300);}
+.hero h1{
+  font-family:var(--font-display);font-weight:900;
+  font-size:clamp(3.2rem,9vw,7.2rem);
+  line-height:1.08;letter-spacing:0.02em;
+}
+.hero h1 .accent{
+  color:var(--caramel-300);
+  display:inline-block;
+  animation:accentPulse 6s ease-in-out infinite;
+}
+@keyframes accentPulse{
+  0%,100%{text-shadow:0 0 26px rgba(201,142,86,0.25);}
+  50%{text-shadow:0 0 48px rgba(223,167,110,0.55);}
+}
+.hero-sub{
+  margin-top:28px;max-width:560px;
+  color:var(--latte-200);font-weight:300;
+  font-size:clamp(1.05rem,2vw,1.32rem);line-height:1.9;
+}
+.hero-by{
+  margin-top:20px;color:var(--muted);letter-spacing:0.16em;font-size:0.95rem;
+}
+.hero-by strong{color:var(--latte-100);font-weight:500;}
+.hero-mail{
+  display:inline-block;margin-top:18px;
+  font-family:var(--font-en);font-size:0.9rem;letter-spacing:0.12em;
+  color:var(--muted);text-decoration:none;border-bottom:1px solid rgba(201,142,86,0.3);
+  padding-bottom:3px;transition:color 0.3s ease,border-color 0.3s ease;
+}
+.hero-mail:hover{color:var(--caramel-200);border-color:var(--caramel-300);}
+
+/* =========================================================
+   区块通用
+   ========================================================= */
+.panel{position:relative;padding:130px 0;}
+.panel-alt{background:rgba(36,19,9,0.28);}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--line) 20%,var(--line) 80%,transparent);max-width:1200px;margin:0 auto;}
+
+/* =========================================================
+   画廊式筛选与卡片（致敬 awesome-claude-opus-5.5 案例合集）
+   ========================================================= */
+.gallery-tabs{
+  display:flex;flex-wrap:wrap;gap:10px;margin-bottom:44px;
+  padding-bottom:2px;
+}
+.g-tab{
+  appearance:none;border:1px solid var(--line);background:rgba(38,19,9,0.4);
+  color:var(--muted);font-family:var(--font-body);font-size:0.92rem;
+  letter-spacing:0.04em;padding:9px 18px;border-radius:999px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:color 0.25s ease,border-color 0.25s ease,background 0.25s ease;
+}
+.g-tab:hover{color:var(--latte-100);border-color:rgba(201,142,86,0.4);}
+.g-tab .cnt{
+  font-size:0.72rem;color:var(--caramel-300);
+  border:1px solid rgba(201,142,86,0.4);border-radius:999px;padding:1px 8px;
+  transition:border-color 0.25s ease,color 0.25s ease;
+}
+.g-tab.is-active{
+  color:var(--caramel-200);
+  background:rgba(201,142,86,0.12);
+  border-color:rgba(201,142,86,0.55);
+}
+.g-tab.is-active .cnt{border-color:rgba(223,167,110,0.6);color:var(--caramel-200);}
+.gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+.g-card{
+  position:relative;
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  overflow:hidden;text-decoration:none;
+  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1),border-color 0.4s ease,background 0.4s ease,opacity 0.5s ease;
+}
+.g-card:hover{transform:translateY(-8px);border-color:rgba(201,142,86,0.5);background:rgba(51,27,14,0.72);}
+.g-card.is-hidden{display:none;}
+.g-card-media{
+  position:relative;aspect-ratio:16/10;overflow:hidden;
+  background:var(--card-solid);border-bottom:1px solid var(--line);
+}
+.g-card-media img{width:100%;height:100%;object-fit:cover;transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);}
+.g-card:hover .g-card-media img{transform:scale(1.06);}
+.g-badge{
+  position:absolute;top:14px;left:14px;
+  font-size:0.72rem;letter-spacing:0.14em;color:var(--latte-100);
+  background:rgba(20,10,5,0.8);border:1px solid rgba(201,142,86,0.5);
+  border-radius:999px;padding:4px 12px;
+}
+.g-card-body{padding:22px 24px 24px;}
+.g-card-no{
+  font-family:var(--font-display);font-weight:900;font-size:1.05rem;
+  color:transparent;-webkit-text-stroke:1px rgba(201,142,86,0.55);
+  letter-spacing:0.16em;
+}
+.g-card-body h3{
+  font-family:var(--font-display);font-weight:700;font-size:1.22rem;
+  color:var(--latte-100);margin:10px 0 8px;line-height:1.4;
+}
+.g-card-body p{color:var(--muted);font-size:0.9rem;line-height:1.8;}
+.g-arrow{
+  position:absolute;right:20px;bottom:22px;
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid rgba(201,142,86,0.5);color:var(--caramel-300);
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.3s ease,color 0.3s ease,transform 0.3s ease;
+}
+.g-card:hover .g-arrow{background:var(--caramel-300);color:var(--espresso-950);transform:translateX(3px);}
+/* 自动化工具的代码风格缩略图 */
+.g-code-media{
+  display:flex;align-items:center;padding:20px 24px;aspect-ratio:16/10;
+  background:
+    radial-gradient(70% 80% at 20% 0%, rgba(160,99,52,0.25), transparent 60%),
+    var(--card-solid);
+}
+.g-code-media pre{
+  font-family:ui-monospace,"Cascadia Code",Consolas,monospace;
+  font-size:clamp(0.66rem,1.3vw,0.86rem);line-height:2;color:var(--latte-200);
+  overflow:hidden;
+}
+.g-code-media pre .kw{color:var(--caramel-300);}
+.g-code-media pre .st{color:#E8C99A;}
+.g-code-media pre .nu{color:var(--caramel-200);}
+.g-code-media pre .cm{color:#8A6245;}
+
+/* =========================================================
+   产品展示（空间智能）
+   ========================================================= */
+.prod{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;margin-bottom:96px;}
+.prod:last-child{margin-bottom:0;}
+.prod-reverse .prod-media{order:2;}
+.prod-media{position:relative;}
+.prod-media::before{
+  content:"";position:absolute;inset:-22px;border-radius:24px;
+  background:radial-gradient(60% 60% at 50% 40%, rgba(201,142,86,0.2), transparent 70%);
+  z-index:-1;
+}
+.prod-frame{
+  border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  background:var(--card-solid);
+  box-shadow:var(--shadow);
+  transform:translateZ(0);
+}
+.prod-frame img{display:block;width:100%;height:auto;}
+.prod-caption{
+  margin-top:14px;color:var(--muted);font-size:0.86rem;text-align:center;letter-spacing:0.04em;
+}
+.prod-no{
+  font-family:var(--font-display);font-weight:900;font-size:1.05rem;
+  color:var(--caramel-300);letter-spacing:0.24em;margin-bottom:18px;
+}
+.prod h3{
+  font-family:var(--font-display);font-weight:700;
+  font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.35;color:var(--latte-100);
+}
+.prod-desc{
+  margin-top:18px;color:var(--muted);font-weight:300;font-size:1.02rem;line-height:2;
+}
+.prod-points{margin-top:24px;display:grid;gap:12px;list-style:none;}
+.prod-points li{
+  display:flex;gap:14px;align-items:flex-start;
+  color:var(--latte-200);font-size:0.94rem;line-height:1.7;
+}
+.prod-points li::before{
+  content:"";flex:none;width:7px;height:7px;border-radius:50%;
+  background:var(--caramel-300);margin-top:11px;
+  box-shadow:0 0 10px rgba(201,142,86,0.6);
+}
+
+/* =========================================================
+   ToB Agent
+   ========================================================= */
+.tob-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;}
+.tob-card{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:36px 34px;
+}
+.tob-card h4{
+  font-family:var(--font-display);font-weight:700;font-size:1.32rem;
+  color:var(--latte-100);margin-bottom:22px;display:flex;align-items:center;gap:12px;
+}
+.tob-card h4 .chip{
+  font-family:var(--font-body);font-size:0.72rem;font-weight:500;
+  color:var(--caramel-300);border:1px solid rgba(201,142,86,0.4);
+  border-radius:999px;padding:2px 10px;letter-spacing:0.1em;
+}
+.pain-list{list-style:none;display:grid;gap:16px;}
+.pain-list li{
+  display:flex;gap:16px;align-items:flex-start;
+  padding:16px 18px;border:1px solid var(--line);border-radius:14px;
+  background:rgba(20,10,5,0.4);
+  color:var(--latte-200);font-size:0.95rem;line-height:1.7;
+}
+.pain-list li .pain-n{
+  flex:none;font-family:var(--font-display);font-weight:700;font-size:0.9rem;
+  color:var(--caramel-300);border:1px solid rgba(201,142,86,0.5);
+  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  margin-top:2px;
+}
+.pain-list li b{color:var(--caramel-200);font-weight:500;}
+.solution-flow{list-style:none;display:grid;gap:0;counter-reset:flow;}
+.solution-flow li{
+  counter-increment:flow;
+  display:flex;gap:18px;align-items:flex-start;
+  padding:18px 0;border-bottom:1px dashed var(--line);
+}
+.solution-flow li:last-child{border-bottom:none;}
+.solution-flow li::before{
+  content:counter(flow,decimal-leading-zero);
+  font-family:var(--font-display);font-weight:700;color:var(--caramel-300);
+  font-size:1.05rem;letter-spacing:0.08em;padding-top:2px;flex:none;
+}
+.solution-flow b{display:block;color:var(--latte-100);font-weight:500;font-size:1rem;}
+.solution-flow span{color:var(--muted);font-size:0.9rem;line-height:1.7;display:block;margin-top:4px;}
+.tob-fig{
+  margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:rgba(20,10,5,0.4);
+}
+.tob-fig img{display:block;width:100%;height:auto;}
+.tob-fig span{
+  display:block;padding:10px 16px;color:var(--muted);font-size:0.8rem;
+  letter-spacing:0.06em;border-top:1px solid var(--line);text-align:center;
+}
+.arch-2col{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:56px;}
+.param-table-wrap{
+  margin-top:40px;border:1px solid var(--line);border-radius:16px;
+  overflow:auto;max-height:540px;background:var(--card);
+  scrollbar-width:thin;scrollbar-color:rgba(201,142,86,0.35) transparent;
+}
+.param-table{width:100%;border-collapse:collapse;min-width:880px;}
+.param-table th{
+  position:sticky;top:0;z-index:1;background:#1E130B;
+  color:var(--caramel-300);font-family:var(--font-en);
+  font-size:0.76rem;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;
+  text-align:left;padding:14px 18px;border-bottom:1px solid var(--line);
+}
+.param-table td{
+  padding:13px 18px;border-bottom:1px solid rgba(255,255,255,0.04);
+  color:var(--muted);font-size:0.86rem;line-height:1.7;vertical-align:top;
+}
+.param-table tr:last-child td{border-bottom:none;}
+.param-table .pg{
+  color:var(--caramel-200);font-weight:500;letter-spacing:0.08em;
+  font-family:var(--font-display);white-space:nowrap;
+}
+.param-table .pn{color:var(--latte-100);white-space:nowrap;}
+.param-table .pi{font-family:var(--font-en);color:var(--muted);font-size:0.8rem;white-space:nowrap;}
+.param-table .pt{font-family:var(--font-en);font-size:0.78rem;color:var(--caramel-300);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;}
+.param-table .pv{color:var(--muted);font-size:0.84rem;}
+.param-table tr:hover td{background:rgba(201,142,86,0.05);}
+.arch-item .prod-caption{color:var(--latte-200);}
+
+/* =========================================================
+   看房小助手
+   ========================================================= */
+.house-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;}
+.house-shot-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:26px;margin-top:64px;
+}
+.shot{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:20px;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1),border-color 0.4s ease;
+}
+.shot:hover{transform:translateY(-6px);border-color:rgba(201,142,86,0.45);}
+.shot .shot-frame{border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--line);aspect-ratio:3/4;}
+.shot img{display:block;width:100%;height:100%;object-fit:cover;}
+.shot h5{
+  margin-top:16px;font-family:var(--font-display);font-weight:700;
+  font-size:1.02rem;color:var(--latte-100);
+}
+.shot p{color:var(--muted);font-size:0.84rem;margin-top:6px;line-height:1.7;}
+
+/* 痛点 / 方案 双栏 */
+.half-title{
+  font-family:var(--font-display);font-weight:700;font-size:1.5rem;
+  color:var(--latte-100);margin-bottom:26px;
+  display:flex;align-items:center;gap:14px;
+}
+.half-title .tick{color:var(--caramel-300);}
+.solve-list{list-style:none;display:grid;gap:14px;}
+.solve-list li{
+  display:flex;gap:14px;align-items:flex-start;
+  color:var(--latte-200);font-size:0.96rem;line-height:1.75;
+}
+.solve-list li::before{
+  content:"";flex:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C98E56' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/14px no-repeat;
+  border:1px solid rgba(201,142,86,0.5);border-radius:50%;
+  width:24px;height:24px;margin-top:4px;
+}
+.tools-pain,.biz-bg{
+  margin-top:36px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  color:var(--latte-200);font-size:1.02rem;letter-spacing:0.02em;
+}
+.tools-pain .tick,.biz-bg .tick{
+  font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--caramel-300);
+  border:1px solid rgba(201,142,86,0.45);border-radius:999px;padding:6px 18px;letter-spacing:0.24em;
+}
+.tools-note{
+  margin-top:12px;color:var(--muted);font-size:0.88rem;letter-spacing:0.05em;line-height:1.8;
+}
+.tools-note b{color:var(--latte-100);font-weight:500;}
+.pain-box{
+  background:rgba(20,10,5,0.45);border:1px solid var(--line);border-radius:16px;
+  padding:22px 24px;display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;
+  color:var(--latte-200);font-size:0.95rem;line-height:1.75;
+}
+.pain-box:last-child{margin-bottom:0;}
+.pain-box .mark{
+  flex:none;font-family:var(--font-display);font-weight:700;color:var(--caramel-300);
+  font-size:1.4rem;line-height:1.2;
+}
+
+/* =========================================================
+   自动化工具集
+   ========================================================= */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.feat{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:28px 26px;position:relative;overflow:hidden;
+  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1),border-color 0.4s ease;
+}
+.feat:hover{transform:translateY(-6px);border-color:rgba(201,142,86,0.45);}
+.feat .feat-no{
+  font-family:var(--font-display);font-weight:900;font-size:1.5rem;
+  color:transparent;-webkit-text-stroke:1px rgba(201,142,86,0.5);
+}
+.feat h5{
+  font-family:var(--font-display);font-weight:700;font-size:1.08rem;
+  color:var(--latte-100);margin:14px 0 8px;
+}
+.feat p{color:var(--muted);font-size:0.88rem;line-height:1.75;}
+.feat-note{
+  margin-top:26px;padding:16px 22px;border-left:3px solid var(--caramel-300);
+  background:rgba(51,27,14,0.4);color:var(--latte-200);font-size:0.94rem;line-height:1.85;
+  border-radius:0 12px 12px 0;
+}
+
+/* =========================================================
+   奏折采集 · 操作台与监控台（检索配置台 / 运行监控台）
+   ========================================================= */
+.demo{
+  margin-top:56px;border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  background:rgba(20,10,5,0.6);box-shadow:var(--shadow);
+}
+.demo-head{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  padding:16px 26px;border-bottom:1px solid var(--line);background:rgba(38,19,9,0.6);
+}
+.demo-title{
+  font-family:var(--font-display);font-weight:700;color:var(--latte-100);font-size:1.04rem;
+  display:flex;align-items:center;gap:10px;
+}
+.demo-title::before{
+  content:"";width:8px;height:8px;border-radius:50%;background:var(--caramel-300);
+  box-shadow:0 0 10px rgba(201,142,86,0.8);animation:blink 2s ease-in-out infinite;
+}
+.demo-switch{
+  display:flex;gap:6px;background:rgba(20,10,5,0.65);padding:5px;border-radius:999px;
+  border:1px solid var(--line);
+}
+.d-tab{
+  appearance:none;border:none;background:transparent;color:var(--muted);
+  font-family:var(--font-body);font-size:0.86rem;letter-spacing:0.04em;
+  padding:7px 18px;border-radius:999px;cursor:pointer;
+  transition:background 0.3s ease,color 0.3s ease;
+}
+.d-tab:hover{color:var(--latte-100);}
+.d-tab.is-active{background:rgba(201,142,86,0.2);color:var(--caramel-200);}
+.demo-view{display:none;padding:28px 26px;}
+.demo-view.is-active{display:block;animation:fadeIn 0.45s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* --- 检索配置台 --- */
+.cfg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 30px;}
+.cfg-field label{
+  display:block;color:var(--muted);font-size:0.82rem;letter-spacing:0.1em;margin-bottom:10px;
+}
+.cfg-field input[type="text"],.cfg-field select,.cfg-field input[type="number"]{
+  width:100%;background:rgba(20,10,5,0.7);border:1px solid var(--line);border-radius:10px;
+  color:var(--latte-100);padding:11px 14px;font-family:var(--font-body);font-size:0.95rem;
+  outline:none;transition:border-color 0.25s ease;
+}
+.cfg-field input:focus,.cfg-field select:focus{border-color:rgba(201,142,86,0.6);}
+.cfg-field input[type="range"]{
+  width:100%;accent-color:var(--caramel-300);cursor:pointer;
+}
+.cfg-val{color:var(--caramel-200);font-weight:500;}
+.cfg-pair{display:flex;align-items:center;gap:10px;}
+.cfg-pair input[type="number"]{text-align:center;flex:1;}
+.cfg-pair input[type="range"]{flex:1;}
+.cfg-pair .cfg-val{flex:none;width:44px;text-align:right;font-size:0.84rem;}
+.cfg-switches{display:grid;gap:10px;grid-column:1 / -1;margin-top:4px;}
+.switch-row{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:rgba(20,10,5,0.4);
+}
+.switch-row span{color:var(--latte-200);font-size:0.9rem;line-height:1.5;}
+.tgl{position:relative;width:46px;height:25px;flex:none;}
+.tgl input{opacity:0;width:100%;height:100%;position:absolute;cursor:pointer;z-index:2;margin:0;}
+.tgl i{position:absolute;inset:0;background:rgba(201,142,86,0.22);border:1px solid rgba(201,142,86,0.4);border-radius:999px;transition:0.3s;}
+.tgl i::after{
+  content:"";position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;
+  background:var(--muted);transition:0.3s;
+}
+.tgl input:checked + i{background:var(--caramel-300);}
+.tgl input:checked + i::after{left:23px;background:var(--espresso-950);}
+.cfg-actions{
+  grid-column:1 / -1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px;
+}
+.cfg-hint{color:var(--muted);font-size:0.82rem;}
+
+/* --- 运行监控台 --- */
+.run-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.r-stat{
+  border:1px solid var(--line);border-radius:14px;padding:14px 18px;
+  background:rgba(20,10,5,0.4);
+}
+.r-stat b{
+  display:block;font-family:var(--font-display);font-size:1.32rem;line-height:1.35;
+  color:var(--caramel-200);word-break:break-all;
+}
+.r-stat span{color:var(--muted);font-size:0.74rem;letter-spacing:0.12em;}
+.run-progress{
+  height:8px;border-radius:999px;background:rgba(20,10,5,0.7);
+  border:1px solid var(--line);overflow:hidden;margin-bottom:24px;
+}
+.run-progress i{
+  display:block;height:100%;width:0;
+  background:linear-gradient(90deg,var(--caramel-300),var(--caramel-200));
+  transition:width 0.5s ease;border-radius:999px;
+  box-shadow:0 0 12px rgba(201,142,86,0.5);
+}
+.run-body{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;}
+.run-list{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(20,10,5,0.35);}
+.run-list-head{
+  padding:10px 16px;border-bottom:1px solid var(--line);
+  color:var(--muted);font-size:0.76rem;letter-spacing:0.14em;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.run-list-body{max-height:286px;overflow-y:auto;}
+.run-item{
+  display:flex;align-items:center;gap:12px;padding:8px 16px;
+  border-bottom:1px dashed rgba(245,234,218,0.08);
+  font-size:0.84rem;color:var(--latte-200);line-height:1.6;
+}
+.run-item:last-child{border-bottom:none;}
+.run-item .st{width:8px;height:8px;border-radius:50%;flex:none;background:var(--muted);opacity:0.5;}
+.run-item.is-done .st{background:var(--caramel-300);opacity:1;box-shadow:0 0 8px rgba(201,142,86,0.7);}
+.run-item.is-doing .st{background:var(--caramel-200);opacity:1;animation:blink 0.9s ease-in-out infinite;}
+.run-item.is-done{color:var(--muted);}
+.run-item .st-tag{margin-left:auto;font-size:0.72rem;letter-spacing:0.1em;flex:none;}
+.run-item.is-done .st-tag{color:var(--caramel-300);}
+.run-item.is-doing .st-tag{color:var(--caramel-200);}
+@keyframes blink{50%{opacity:0.25;}}
+.console{
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:rgba(10,5,2,0.88);
+  font-family:ui-monospace,"Cascadia Code",Consolas,monospace;font-size:0.78rem;line-height:1.8;
+}
+.console-head{
+  padding:10px 16px;border-bottom:1px solid var(--line);
+  color:var(--muted);font-size:0.74rem;letter-spacing:0.12em;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.console-clear{background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.74rem;font-family:inherit;}
+.console-clear:hover{color:var(--caramel-200);}
+.console-body{height:286px;overflow-y:auto;padding:14px 16px;color:var(--latte-200);}
+.console-body .ln{display:block;white-space:pre-wrap;word-break:break-all;}
+.console-body .ln.ok{color:#DFA76E;}
+.console-body .ln.warn{color:#E8C99A;}
+.console-body .ln.done{color:#F5EADA;}
+.run-controls{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;align-items:center;}
+.btn{
+  appearance:none;border:1px solid rgba(201,142,86,0.55);background:rgba(201,142,86,0.14);
+  color:var(--caramel-200);border-radius:999px;padding:10px 24px;font-family:var(--font-body);
+  font-size:0.9rem;cursor:pointer;letter-spacing:0.06em;
+  transition:background 0.3s ease,color 0.3s ease,border-color 0.3s ease,opacity 0.3s ease;
+}
+.btn:hover{background:rgba(201,142,86,0.26);}
+.btn-primary{background:var(--caramel-300);color:var(--espresso-950);border-color:var(--caramel-300);font-weight:500;}
+.btn-primary:hover{background:var(--caramel-200);}
+.btn-ghost{border-color:var(--line);color:var(--muted);background:transparent;}
+.btn-ghost:hover{color:var(--latte-100);border-color:rgba(201,142,86,0.4);}
+.btn:disabled{opacity:0.35;cursor:not-allowed;}
+.demo-toast{
+  position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(16px);
+  opacity:0;z-index:70;background:var(--espresso-800);
+  border:1px solid rgba(201,142,86,0.55);color:var(--latte-100);
+  padding:12px 24px;border-radius:999px;font-size:0.9rem;
+  transition:opacity 0.35s ease,transform 0.35s ease;pointer-events:none;box-shadow:var(--shadow);
+}
+.demo-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* 代码高亮 */
+.code-block{
+  margin-top:56px;border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  background:rgba(20,10,5,0.72);box-shadow:var(--shadow);
+}
+.code-head{
+  display:flex;align-items:center;gap:12px;padding:14px 22px;
+  border-bottom:1px solid var(--line);
+  background:rgba(38,19,9,0.6);
+}
+.code-head .dot{width:11px;height:11px;border-radius:50%;}
+.code-head .dot:nth-child(1){background:#8A4B2B;}
+.code-head .dot:nth-child(2){background:#B97A45;}
+.code-head .dot:nth-child(3){background:#DFA76E;}
+.code-head span{
+  margin-left:auto;color:var(--muted);font-size:0.78rem;letter-spacing:0.14em;
+  font-family:ui-monospace,"Cascadia Code",Consolas,monospace;
+}
+pre.code{
+  padding:26px 30px;overflow-x:auto;
+  font-family:ui-monospace,"Cascadia Code",Consolas,monospace;
+  font-size:0.88rem;line-height:1.85;color:var(--latte-200);
+}
+pre.code .cm{color:#8A6245;}
+pre.code .kw{color:#DFA76E;}
+pre.code .st{color:#E8C99A;}
+pre.code .nu{color:#C98E56;}
+
+/* =========================================================
+   Footer
+   ========================================================= */
+footer{
+  border-top:1px solid var(--line);
+  padding:70px 0 56px;text-align:center;position:relative;
+}
+footer .f-mark{
+  font-family:var(--font-en);font-weight:500;
+  font-size:clamp(2.2rem,5.4vw,3.8rem);line-height:1.15;
+  color:transparent;-webkit-text-stroke:1px rgba(201,142,86,0.4);
+  letter-spacing:0.1em;user-select:none;
+}
+footer .f-cn{
+  font-family:var(--font-display);font-weight:700;
+  font-size:clamp(1.3rem,2.8vw,1.9rem);color:var(--latte-100);
+  margin-top:12px;letter-spacing:0.1em;
+}
+footer p{margin-top:16px;color:var(--muted);font-size:0.9rem;letter-spacing:0.14em;}
+footer p b{color:var(--latte-100);font-weight:500;}
+footer .f-tag{
+  font-family:var(--font-en);font-style:italic;color:var(--caramel-300);
+  font-size:1rem;margin-top:8px;letter-spacing:0.08em;
+}
+
+/* =========================================================
+   响应式
+   ========================================================= */
+@media (max-width:1020px){
+  .prod{grid-template-columns:1fr;gap:36px;}
+  .prod-reverse .prod-media{order:0;}
+  .tob-grid,.house-grid{grid-template-columns:1fr;gap:36px;}
+  .feat-grid{grid-template-columns:repeat(2,1fr);}
+  .arch-2col{grid-template-columns:1fr;gap:28px;}
+}
+@media (max-width:680px){
+  .wrap{padding:0 22px;}
+  .nav{padding:16px 22px;}
+  .nav.is-scrolled{padding:12px 22px;}
+  .nav-links{
+    display:none;position:fixed;top:58px;left:0;right:0;
+    flex-direction:column;gap:0;
+    background:rgba(20,10,5,0.92);backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-links a{display:block;padding:16px 24px;border-bottom:1px solid var(--line);}
+  .nav-toggle{
+    display:flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;
+  }
+  .nav-toggle i{width:22px;height:2px;background:var(--latte-100);display:block;transition:0.3s;}
+  .feat-grid{grid-template-columns:1fr;}
+  .gallery-grid{grid-template-columns:1fr;}
+  .house-shot-grid{grid-template-columns:1fr;}
+  .hero{padding-top:140px;}
+  .section-index{top:-16px;}
+  .prod-frame img{max-height:420px;width:auto;margin:0 auto;}
+  .shot-frame img{max-height:520px;width:auto;margin:0 auto;}
+  .demo-view{padding:20px 16px;}
+  .demo-head{padding:14px 16px;}
+  .cfg-grid{grid-template-columns:1fr;gap:18px;}
+  .cfg-switches{grid-column:auto;}
+  .cfg-actions{grid-column:auto;}
+  .run-stats{grid-template-columns:repeat(2,1fr);}
+  .run-body{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  .reveal{opacity:1;transform:none;transition:none;}
+  /* 背景流动为本站核心视觉设计，保留动画 */
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 背景：流动的咖啡色烟雾渐变 ============ -->
+<div class="bg" aria-hidden="true">
+  <div class="bg-base"></div>
+  <div class="blob b-blob-a" data-parallax="0.06"></div>
+  <div class="blob b-blob-b" data-parallax="0.1"></div>
+  <div class="blob b-blob-c" data-parallax="0.05"></div>
+  <div class="blob b-blob-d" data-parallax="0.12"></div>
+  <div class="blob b-blob-e" data-parallax="0.08"></div>
+  <div class="puff p-p1" data-parallax="0.14"></div>
+  <div class="puff p-p2" data-parallax="0.09"></div>
+  <div class="puff p-p3" data-parallax="0.12"></div>
+  <div class="puff p-p4" data-parallax="0.07"></div>
+  <div class="bg-colorflow" aria-hidden="true"></div>
+  <div class="bg-grain"></div>
+  <div class="bg-vignette"></div>
+</div>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- ============ 左右翻页箭头 ============ -->
+<button class="nav-arrow nav-prev" id="navPrev" aria-label="上一页"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></button>
+<button class="nav-arrow nav-next" id="navNext" aria-label="下一页"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+
+<!-- ============ 页码 ============ -->
+<div class="page-count" aria-hidden="true"><b id="pageCur">01</b><span>/</span><span id="pageTotal">07</span></div>
+
+<!-- ============ 导航 ============ -->
+<header class="nav" id="nav">
+  <a class="nav-brand" href="#top">AI<em>·</em>作品集</a>
+  <button class="nav-toggle" id="navToggle" aria-label="打开导航"><i></i><i></i><i></i></button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#overview">概览</a></li>
+<li><a href="#tob">ToB Agent</a></li>
+<li><a href="#spatial">空间智能</a></li>
+<li><a href="#tools">自动化工具</a></li>
+<li><a href="#house">看房助手</a></li>
+  </ul>
+</header>
+
+<main id="top" class="stage">
+
+<!-- ============ Hero ============ -->
+<section class="hero page">
+  <div class="wrap">
+    <div class="hero-eyebrow reveal">AI Portfolio · 2026 · 数据已脱敏</div>
+    <h1 class="reveal flip" style="--d:0.08s">AI 产品<span class="accent">作品集</span></h1>
+    <div class="hero-by reveal" style="--d:0.24s">Designed by <strong>佟兵盈</strong></div>
+    <span class="hero-mail reveal" style="--d:0.3s">18712643102@163.com</span>
+  </div>
+</section>
+
+<!-- ============ 概览 ============ -->
+<section class="panel page" id="overview">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-index reveal">01</div>
+      <div class="eyebrow reveal">Contents</div>      <h2 class="section-title reveal flip">项目概览</h2>
+    </div>
+    <div class="gallery-tabs reveal" id="galleryTabs">
+      <button class="g-tab is-active" data-filter="all">全部 <span class="cnt">4</span></button>
+<button class="g-tab" data-filter="agent">ToB Agent <span class="cnt">1</span></button>
+<button class="g-tab" data-filter="spatial">空间智能 <span class="cnt">1</span></button>
+<button class="g-tab" data-filter="automation">自动化工具 <span class="cnt">1</span></button>
+<button class="g-tab" data-filter="app">看房助手 <span class="cnt">1</span></button>
+    </div>
+    <div class="gallery-grid" id="galleryGrid">
+<a class="g-card reveal" href="#tob" data-cat="agent" style="--d:0s">
+        <div class="g-card-media">
+          <img src="https://aka.doubaocdn.com/s/r9gyWqsDXZ" alt="ToB 合作案例查询 AI Agent 全链路方案">
+          <span class="g-badge">B 端 · AI Agent</span>
+        </div>
+        <div class="g-card-body">
+          <div class="g-card-no">01</div>
+          <h3>ToB 合作案例查询 AI Agent</h3>
+          <p>构建跨系统查询 Agent，流程提效 90%+。</p>
+        </div>
+        <span class="g-arrow"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></span>
+      </a>
+<a class="g-card reveal" href="#spatial" data-cat="spatial" style="--d:0.08s">
+        <div class="g-card-media">
+          <img src="https://aka.doubaocdn.com/s/mkFiMwLZWF" alt="飞渡大模型·空间智能产品图">
+          <span class="g-badge">B 端 · 自研产品</span>
+        </div>
+        <div class="g-card-body">
+          <div class="g-card-no">02</div>
+          <h3>飞渡大模型 · 空间智能</h3>
+          <p>依托峥嵘模型，三个自研产品设计：无人机；训练场；语言重塑三维世界。</p>
+        </div>
+        <span class="g-arrow"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></span>
+      </a>
+<a class="g-card reveal" href="#tools" data-cat="automation" style="--d:0.16s">
+        <div class="g-card-media g-code-media">
+          <pre><span class="kw">BASE_URL</span> = <span class="st">"https://www.qinghistory.cn/"</span>
+<span class="kw">KEYWORD</span> = <span class="st">"雹"</span>   <span class="kw">NIAN</span> = <span class="st">"乾隆"</span>
+<span class="kw">DAILY_LIMIT</span> = <span class="nu">40</span>   <span class="kw">DELAY_MIN</span> = <span class="nu">1.0</span>
+<span class="kw">DELAY_MAX</span> = <span class="nu">2.5</span></pre>
+          <span class="g-badge">个人 · 自动化</span>
+        </div>
+        <div class="g-card-body">
+          <div class="g-card-no">03</div>
+          <h3>奏折自动化查询 + API 转文字系统</h3>
+          <p>Python 驱动清史网数字图书馆采集奏折档案，大模型 API 逐页识别成文——从网页抓取到可读文档全自动，1227 条批量跑。</p>
+        </div>
+        <span class="g-arrow"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></span>
+      </a>
+<a class="g-card reveal" href="#house" data-cat="app" style="--d:0.24s">
+        <div class="g-card-media">
+          <img src="https://aka.doubaocdn.com/s/MVLPMYiPzy" alt="看房小助手-房源列表界面">
+          <span class="g-badge">C 端 · 打分工具</span>
+        </div>
+        <div class="g-card-body">
+          <div class="g-card-no">04</div>
+          <h3>看房小助手</h3>
+          <p>自定义维度权重，自动算综合分。</p>
+        </div>
+        <span class="g-arrow"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></span>
+      </a>
+</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============ 01 飞渡大模型 · 空间智能 ============ -->
+
+
+<section class="panel page" id="tob">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-index reveal">02</div>
+      <div class="eyebrow reveal">Project 02 · ToB Agent</div>
+      <h2 class="section-title reveal flip">ToB 合作案例查询 AI Agent</h2>
+      <p class="section-sub reveal">京东 ToB 合作案例查询：ReAct 四层架构全链路覆盖，一句话输入自动全链路，可追问迭代。</p>
+    </div>
+
+    <div class="tob-grid">
+      <div class="tob-card reveal">
+        <h4>业务痛点 <span class="chip">改造前 · 30-60 分钟 / 次</span></h4>
+        <ul class="pain-list">
+          <li><span class="pain-n">1</span><span>系统切换至少 <b>4 次</b>（CRM / 数据 / 财务 / 合同）</span></li>
+          <li><span class="pain-n">2</span><span>同一条件至少输入 <b>3 次</b></span></li>
+          <li><span class="pain-n">3</span><span>人工比对去重、格式化约 <b>20 分钟</b></span></li>
+          <li><span class="pain-n">4</span><span>最终手动复制粘贴到 <b>Excel / Word</b></span></li>
+        </ul>
+        <div class="tob-fig">
+          <img src="https://aka.doubaocdn.com/s/4vTGJ8IGV1" alt="ToB 合作案例查询人工工作流">
+          <span>改造前 · 人工工作流（30-60 分钟）</span>
+        </div>
+      </div>
+      <div class="tob-card reveal" style="--d:0.1s">
+        <h4>AI 全链路方案 <span class="chip">改造后 · 一句话</span></h4>
+        <ol class="solution-flow">
+          <li><b>语义解析</b><span>自然语言 → 意图 + 参数</span></li>
+          <li><b>工具编排</b><span>自动调度 CRM / 数据 / 财务 / 合同 CLI</span></li>
+          <li><b>多源整合</b><span>跨系统结果自动拼接</span></li>
+          <li><b>脱敏处理</b><span>按权限输出区间值</span></li>
+          <li><b>结构化输出</b><span>Markdown 直接可导出</span></li>
+        </ol>
+        <div class="tob-fig">
+          <img src="https://aka.doubaocdn.com/s/r9gyWqsDXZ" alt="AI 全链路产品平台搭建流程图">
+          <span>改造后 · AI 全链路覆盖方案（可追问迭代）</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:88px">
+      <div class="eyebrow reveal">Parameter Definition</div>
+      <h2 class="section-title reveal" style="font-size:clamp(1.6rem,3.2vw,2.3rem)">全场景参数化定义总表</h2>
+    </div>
+    <div class="param-table-wrap reveal">
+      <table class="param-table">
+        <thead>
+          <tr>
+            <th>参数分组</th>
+            <th>参数名称</th>
+            <th>参数标识符</th>
+            <th>参数类型</th>
+            <th>可选值 / 示例说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="pg" rowspan="6">客户维度</td>
+            <td class="pn">客户名称</td>
+            <td class="pi">customer_name</td>
+            <td class="pt">string</td>
+            <td class="pv">"华润集团" / "国家电网" / "中国银行"</td>
+          </tr>
+          <tr>
+            <td class="pn">客户性质</td>
+            <td class="pi">customer_type</td>
+            <td class="pt">enum</td>
+            <td class="pv">央企 / 国企 / 民企 / 外企 / 政府 / 事业单位 / 混合所有制 / 不限</td>
+          </tr>
+          <tr>
+            <td class="pn">客户层级</td>
+            <td class="pi">customer_level</td>
+            <td class="pt">enum</td>
+            <td class="pv">总部 / 子公司 / 所有 / 含下级单位</td>
+          </tr>
+          <tr>
+            <td class="pn">所属行业</td>
+            <td class="pi">industry</td>
+            <td class="pt">enum</td>
+            <td class="pv">金融 / 能源 / 科技 / 制造 / 零售 / 医药 / 教育 / 通信 / 交通 / 地产 / 其他 / 不限</td>
+          </tr>
+          <tr>
+            <td class="pn">企业规模</td>
+            <td class="pi">customer_scale</td>
+            <td class="pt">enum</td>
+            <td class="pv">大型（营收 &gt;10亿）/ 中型（1亿~10亿）/ 小型（&lt;1亿）/ 不限</td>
+          </tr>
+          <tr>
+            <td class="pn">合作状态</td>
+            <td class="pi">cooperation_status</td>
+            <td class="pt">enum</td>
+            <td class="pv">历史合作 / 当前合作 / 全部</td>
+          </tr>
+          <tr>
+            <td class="pg" rowspan="7">项目维度</td>
+            <td class="pn">项目类型</td>
+            <td class="pi">project_type</td>
+            <td class="pt">enum</td>
+            <td class="pv">员工福利 / 客户营销 / 积分兑换 / 集体采购 / 不限</td>
+          </tr>
+          <tr>
+            <td class="pn">项目状态</td>
+            <td class="pi">project_status</td>
+            <td class="pt">enum</td>
+            <td class="pv">进行中 / 已结束 / 全部</td>
+          </tr>
+          <tr>
+            <td class="pn">合作年份</td>
+            <td class="pi">coop_year</td>
+            <td class="pt">string / int</td>
+            <td class="pv">2026 / 去年 / 近三年 / 2024~2026 / 不限</td>
+          </tr>
+          <tr>
+            <td class="pn">合作月份</td>
+            <td class="pi">coop_month</td>
+            <td class="pt">string / int</td>
+            <td class="pv">Q1~Q4 / 1~12月 / 上半年 / 不限</td>
+          </tr>
+          <tr>
+            <td class="pn">流水量级</td>
+            <td class="pi">flow_amount</td>
+            <td class="pt">enum + range</td>
+            <td class="pv">&gt;500万 / 100万~500万 / &lt;100万 / 不限 / Top N</td>
+          </tr>
+          <tr>
+            <td class="pn">流水排序</td>
+            <td class="pi">flow_sort</td>
+            <td class="pt">enum</td>
+            <td class="pv">降序 / 升序 / 不限</td>
+          </tr>
+          <tr>
+            <td class="pn">品类筛选</td>
+            <td class="pi">category</td>
+            <td class="pt">enum</td>
+            <td class="pv">办公用品 / 食品饮料 / 数码家电 / 日用百货 / 个护美妆 / 不限</td>
+          </tr>
+          <tr>
+            <td class="pg" rowspan="3">数据维度</td>
+            <td class="pn">所需数据类型</td>
+            <td class="pi">data_type</td>
+            <td class="pt">multienum</td>
+            <td class="pv">流水概况 / 品类明细 / 商品明细 / 合同文件 / 发票文件 / 全部</td>
+          </tr>
+          <tr>
+            <td class="pn">是否需要合同</td>
+            <td class="pi">need_contract</td>
+            <td class="pt">boolean</td>
+            <td class="pv">true / false</td>
+          </tr>
+          <tr>
+            <td class="pn">是否需要发票</td>
+            <td class="pi">need_invoice</td>
+            <td class="pt">boolean</td>
+            <td class="pv">true / false</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-head" style="margin-top:88px">
+      <div class="eyebrow reveal">Architecture &amp; Example</div>
+      <h2 class="section-title reveal" style="font-size:clamp(1.6rem,3.2vw,2.3rem)">构建 ReAct 四层架构 · 一个真实查询实例</h2>
+    </div>
+    <div class="arch-2col">
+      <div class="arch-item reveal">
+        <div class="prod-frame"><img src="https://aka.doubaocdn.com/s/huhmYev1JL" alt="ToB 合作案例查询 AI Agent 整体架构图"></div>
+        <div class="prod-caption">左 · 整体架构：入口 / Agent 核心 / 工具层 / 记忆层 / 安全权限 / 后台支撑</div>
+      </div>
+      <div class="arch-item reveal" style="--d:0.1s">
+        <div class="prod-frame"><img src="https://aka.doubaocdn.com/s/857tKD5zq1" alt="华润集团查询推理流程实例"></div>
+        <div class="prod-caption">右 · 华润集团查询推理：身份认证 → 语义解析 → 反问消歧 → 动态编排 → 结构化输出</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+
+
+<section class="panel page" id="spatial">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-index reveal">03</div>
+      <div class="eyebrow reveal">Product 01 · Spatial Intelligence</div>
+      <h2 class="section-title reveal flip">飞渡大模型 · 空间智能</h2>
+    </div>
+
+    <div class="biz-bg reveal">
+      <span class="tick">业务背景</span>
+      <span>基于空间模型搭建全链路 SaaS 服务产品，搭建无人机 / 具身智能 / 三维生成，覆盖"感知、认知、创造、推演"的推理决策闭环。</span>
+    </div>
+
+    <article class="prod">
+      <div class="prod-media reveal">
+        <div class="prod-frame"><img src="https://aka.doubaocdn.com/s/mkFiMwLZWF" alt="瞰瞬·空间智绘无人机产品图"></div>
+        <div class="prod-caption">瞰瞬 · 空间智绘无人机产品页</div>
+      </div>
+      <div class="prod-text reveal" style="--d:0.12s">
+        <div class="prod-no">PRODUCT 01</div>
+        <h3>瞰瞬 · 空间智绘无人机</h3>
+        <p class="prod-desc">无人机视频的实时要素识别生成与推演系统：从感知到推演，解决传统安防被动响应与试错成本高企的痛点。</p>
+        <ul class="prod-points">
+          <li>智慧城建：无人机代替人工巡查，模型生成 + 推演预测城市未来，辅助维修决策</li>
+          <li>国防安保：边境巡逻与入侵识别，战场态势即时推演，辅助战术模拟</li>
+          <li>文旅传播：文物建筑数据建模、风险推演与无人巡检，结合 IP 赋能数字景区</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="prod prod-reverse">
+      <div class="prod-media reveal">
+        <div class="prod-frame"><img src="https://aka.doubaocdn.com/s/y14WfzG0yv" alt="合成数据集·具身智能训练场产品图"></div>
+        <div class="prod-caption">合成数据集 · 具身智能训练场产品页</div>
+      </div>
+      <div class="prod-text reveal" style="--d:0.12s">
+        <div class="prod-no">PRODUCT 02</div>
+        <h3>合成数据集 · 具身智能训练场</h3>
+        <p class="prod-desc">融合高精物理模型与多目视频生成的综合训练与测试平台，基于数字孪生 + 多智能体 + 物理仿真技术，支持高逼真虚拟环境与多目视频具身智能训练测试。</p>
+        <ul class="prod-points">
+          <li>无人驾驶与无人机虚拟交通环境训练</li>
+          <li>具身智能机器人的导航协作任务</li>
+          <li>虚拟社区互动行为模拟，预测城市空间公共状态，赋能城市治理</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="prod">
+      <div class="prod-media reveal">
+        <div class="prod-frame"><img src="https://aka.doubaocdn.com/s/FnKq2L6muW" alt="语言重塑三维世界产品图"></div>
+        <div class="prod-caption">语言重塑三维世界 · 产品页（Beta Build）</div>
+      </div>
+      <div class="prod-text reveal" style="--d:0.12s">
+        <div class="prod-no">PRODUCT 03</div>
+        <h3>语言重塑三维世界</h3>
+        <p class="prod-desc">语义驱动的高精度参数模型生成平台：在 AI 生成的参数化三维世界模型基础上，支持即时语义改动、复原、创造、推演虚拟世界，并兼容智能体进行专业对话、执行任务。</p>
+        <ul class="prod-points">
+          <li>赋能更高效真实的教学与展示</li>
+          <li>更快捷创新的文旅与商业</li>
+          <li>更沉浸丰富的影视游戏场景，快速生成可定制环境</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+
+
+<section class="panel page" id="tools">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-index reveal">04</div>
+      <div class="eyebrow reveal">Project 04 · Automation Tools</div>
+      <h2 class="section-title reveal flip">自动化工具集</h2>
+      <p class="section-sub reveal">从网页采集到文字识别的一整条自动流水线：档案采集 + OCR，1227 条自动跑。</p>
+    </div>
+
+    <div class="tools-pain reveal">
+      <span class="tick">痛点</span>
+      <span>搜图、截图、转文字，很机械且耗时长</span>
+    </div>
+    <p class="tools-note reveal">一个产品，两个部分：<b>奏折自动化查询</b>负责采集截图，<b>API 转文字</b>负责识别成文，全自动串联。</p>
+
+    <div class="section-head" style="margin-bottom:40px">
+      <div class="eyebrow reveal">Project 01 · Archive Crawler</div>
+      <h3 class="section-title reveal" style="font-size:clamp(1.5rem,3vw,2.1rem)">奏折自动化查询系统</h3>
+      <p class="section-sub reveal" style="font-size:0.98rem">基于 Python 驱动清史网数字图书馆：按关键词、朝代、年份筛选档案，逐页自动截图，最终汇总为 Word 文档。六个设计让采集稳定运行。</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat reveal"><div class="feat-no">01</div><h5>多维度检索</h5><p>关键词 + 14 朝朝代 + 年份组合筛选</p></div>
+      <div class="feat reveal" style="--d:0.06s"><div class="feat-no">02</div><h5>断点续传</h5><p>每处理完一个档案写入进度文件，中断后自动续跑</p></div>
+      <div class="feat reveal" style="--d:0.12s"><div class="feat-no">03</div><h5>每日限额控制</h5><p>可配置每日最大处理量，到上限自动停止</p></div>
+      <div class="feat reveal" style="--d:0.18s"><div class="feat-no">04</div><h5>反风控策略</h5><p>档案间、翻页间随机延时，模拟真人节奏</p></div>
+      <div class="feat reveal" style="--d:0.24s"><div class="feat-no">05</div><h5>限流弹窗检测</h5><p>页面文本匹配关键词，触发限制时安全停止</p></div>
+      <div class="feat reveal" style="--d:0.3s"><div class="feat-no">06</div><h5>登录态持久化</h5><p>浏览器 profile 保存登录状态，首次登录后复用</p></div>
+    </div>
+
+    <div class="code-block reveal">
+      <div class="code-head"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>config.py · 配置中心：所有参数集中管理</span></div>
+      <pre class="code"><code><span class="cm"># ================= 网站与搜索 =================</span>
+BASE_URL = <span class="st">"https://www.qinghistory.cn/"</span>
+KEYWORD = <span class="st">"雹"</span>
+NIAN = <span class="st">"乾隆"</span>  <span class="cm"># 只检索乾隆朝档案</span>
+<span class="cm"># ================= 每日限额 =================</span>
+DAILY_LIMIT = <span class="nu">40</span>
+<span class="cm"># ================= 节奏控制（模拟真人，防风控） =================</span>
+DELAY_MIN = <span class="nu">1.0</span>    DELAY_MAX = <span class="nu">2.5</span>
+<span class="cm"># ================= 弹窗检测：关键词列表可自行增删 =================</span></code></pre>
+    </div>
+    <div class="feat-note reveal">改完保存即可生效，不用动其他代码——非技术用户也能轻松上手。</div>
+
+    <!-- ===== 奏折采集 · 操作台与监控台 ===== -->
+    <div class="demo reveal">
+      <div class="demo-head">
+        <div class="demo-title">操作台与监控台 · 采集识别全流程展示</div>
+        <div class="demo-switch" id="demoSwitch">
+          <button class="d-tab is-active" data-view="config">检索配置台</button>
+          <button class="d-tab" data-view="run">运行监控台</button>
+        </div>
+      </div>
+
+      <!-- 页面 1：检索配置台 -->
+      <div class="demo-view is-active" id="view-config">
+        <div class="cfg-grid">
+          <div class="cfg-field">
+            <label>检索关键词</label>
+            <input id="cfgKeyword" type="text" value="雹">
+          </div>
+          <div class="cfg-field">
+            <label>朝代（14 朝组合筛选）</label>
+            <select id="cfgDynasty">
+              <option>天命</option><option>天聪</option><option>崇德</option><option>顺治</option>
+              <option>康熙</option><option>雍正</option><option selected>乾隆</option><option>嘉庆</option>
+              <option>道光</option><option>咸丰</option><option>同治</option><option>光绪</option>
+              <option>宣统</option><option>全部朝代</option>
+            </select>
+          </div>
+          <div class="cfg-field">
+            <label>年份范围</label>
+            <div class="cfg-pair">
+              <input id="cfgYearFrom" type="number" value="1736" min="1600" max="1911">
+              <span style="color:var(--muted)">—</span>
+              <input id="cfgYearTo" type="number" value="1795" min="1600" max="1911">
+            </div>
+          </div>
+          <div class="cfg-field">
+            <label>每日限额 <span class="cfg-val" id="cfgLimitVal">40</span> 条</label>
+            <input id="cfgLimit" type="range" min="5" max="100" value="40">
+          </div>
+          <div class="cfg-field">
+            <label>随机延时（模拟真人节奏 · 防风控）</label>
+            <div class="cfg-pair">
+              <input id="cfgDelayMin" type="range" min="0" max="3" step="0.1" value="1.0">
+              <span class="cfg-val" id="cfgDelayMinVal">1.0s</span>
+              <input id="cfgDelayMax" type="range" min="0" max="5" step="0.1" value="2.5">
+              <span class="cfg-val" id="cfgDelayMaxVal">2.5s</span>
+            </div>
+          </div>
+          <div class="cfg-field">
+            <label>目标档案数（示例）</label>
+            <div class="cfg-pair">
+              <input id="cfgCount" type="number" value="12" min="4" max="20">
+              <span style="color:var(--muted);font-size:0.82rem">条示例档案</span>
+            </div>
+          </div>
+          <div class="cfg-switches">
+            <div class="switch-row"><span>断点续传 · 每完成一条写入进度文件，中断后自动续跑</span><span class="tgl"><input type="checkbox" id="cfgResume" checked><i></i></span></div>
+            <div class="switch-row"><span>限流弹窗检测 · 页面命中关键词时安全停止</span><span class="tgl"><input type="checkbox" id="cfgFlood" checked><i></i></span></div>
+            <div class="switch-row"><span>登录态持久化 · 浏览器 profile 保存，首次登录后复用</span><span class="tgl"><input type="checkbox" id="cfgLogin" checked><i></i></span></div>
+          </div>
+          <div class="cfg-actions">
+            <button class="btn btn-primary" id="cfgStart">开始采集</button>
+            <span class="cfg-hint">将应用以上配置，并切换到运行监控台</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 页面 2：运行监控台 -->
+      <div class="demo-view" id="view-run">
+        <div class="run-stats">
+          <div class="r-stat"><b id="zzStatProgress">0 / 12 条</b><span>档案进度</span></div>
+          <div class="r-stat"><b id="zzStatQuota">0 / 40</b><span>今日额度</span></div>
+          <div class="r-stat"><b id="zzStatCurrent">—</b><span>当前档案</span></div>
+          <div class="r-stat"><b id="zzStatState">就绪</b><span>运行状态</span></div>
+        </div>
+        <div class="run-progress"><i id="zzBar"></i></div>
+        <div class="run-body">
+          <div class="run-list">
+            <div class="run-list-head"><span>检索结果 · 示例档案</span><span id="zzListCount">0 条完成</span></div>
+            <div class="run-list-body" id="zzList"></div>
+          </div>
+          <div class="console">
+            <div class="console-head"><span>采集日志</span><button class="console-clear" id="zzLogClear">清空</button></div>
+            <div class="console-body" id="zzLog"></div>
+          </div>
+        </div>
+        <div class="run-controls">
+          <button class="btn btn-primary" id="zzStartBtn">开始采集</button>
+          <button class="btn" id="zzPauseBtn" disabled>暂停</button>
+          <button class="btn btn-ghost" id="zzResetBtn">重置</button>
+          <button class="btn" id="zzDocBtn" style="display:none">生成 Word 文档</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:96px;margin-bottom:40px">
+      <div class="eyebrow reveal">Project 02 · API OCR</div>
+      <h3 class="section-title reveal" style="font-size:clamp(1.5rem,3vw,2.1rem)">API 转文字系统</h3>      <p class="section-sub reveal" style="font-size:0.98rem">基于大模型 API 的档案图片 OCR 工具：采集工具跑完后，图片自动进入 OCR 流程，直接拿到可读文档。</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat reveal"><div class="feat-no">01</div><h5>GUI 图形界面</h5><p>选输出目录、填 API Key、选模型，一键启动</p></div>
+      <div class="feat reveal" style="--d:0.06s"><div class="feat-no">02</div><h5>双模式识别</h5><p>逐字 OCR 全文，或提取字段结构化输出</p></div>
+      <div class="feat reveal" style="--d:0.12s"><div class="feat-no">03</div><h5>按日期批量处理</h5><p>勾选日期批次，每批自动跑完</p></div>
+      <div class="feat reveal" style="--d:0.18s"><div class="feat-no">04</div><h5>大模型 API 驱动</h5><p>调用豆包 seed 大模型做 OCR，接入点可配</p></div>
+      <div class="feat reveal" style="--d:0.24s"><div class="feat-no">05</div><h5>实时进度与日志</h5><p>进度条实时显示，日志输出每篇识别结果</p></div>
+      <div class="feat reveal" style="--d:0.3s"><div class="feat-no">06</div><h5>输出目录自定义</h5><p>结果存指定 output，与采集工具无缝衔接</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+
+
+<section class="panel page" id="house">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-index reveal">05</div>
+      <div class="eyebrow reveal">Project 03 · House Hunting</div>
+      <h2 class="section-title reveal flip">看房小助手</h2>
+      <p class="section-sub reveal">可视化的自定义打分软件：每个维度自己设权重，自动算综合分，把考量落到分数上。</p>
+    </div>
+
+    <div class="house-grid">
+      <div class="reveal">
+        <div class="half-title"><span class="tick">痛点</span></div>
+        <div class="pain-box"><span class="mark">01</span><span>数据化对比困难</span></div>
+        <div class="pain-box"><span class="mark">02</span><span>位置、租金、面积、装修、通勤，权重因人而异</span></div>
+        <div class="pain-box"><span class="mark">03</span><span>看一套忘一套，最后凭感觉拍板</span></div>
+      </div>
+      <div class="reveal" style="--d:0.1s">
+        <div class="half-title"><span class="tick">解决方案 · 自定义维度打分</span></div>
+        <ul class="solve-list">
+          <li>每个维度自己设权重（通勤 20% / 租金 25%…）</li>
+          <li>自动算综合分，房源按分数排序</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:88px">
+      <div class="eyebrow reveal">Sample</div>
+      <h2 class="section-title reveal" style="font-size:clamp(1.6rem,3.2vw,2.3rem)">四个界面，把考量落到分数上</h2>
+    </div>
+    <div class="house-shot-grid">
+      <div class="shot reveal">
+        <div class="shot-frame"><img src="https://aka.doubaocdn.com/s/MVLPMYiPzy" alt="看房小助手-房源列表界面"></div>
+        <h5>房源列表 · 按综合分排序</h5>
+        <p>录入 3 套房源，综合分排序：阳光花园 81 分、幸福里小区 69.6 分、和平街老社区 53.6 分。</p>
+      </div>
+      <div class="shot reveal" style="--d:0.1s">
+        <div class="shot-frame"><img src="https://aka.doubaocdn.com/s/AKmLMiCP9Z" alt="看房小助手-房源对比界面"></div>
+        <h5>房源对比 · 柱状图直出</h5>
+        <p>已选 3 套（最多 4 套），总分 / 位置 / 单维度三种对比视图，自动给出推荐。</p>
+      </div>
+      <div class="shot reveal" style="--d:0.2s">
+        <div class="shot-frame"><img src="https://aka.doubaocdn.com/s/sOjfUS5hUt" alt="看房小助手-对比维度设置界面"></div>
+        <h5>对比维度 · 权重随意调</h5>
+        <p>已启用 8 个维度，滑块调节权重；超过 100% 时系统按比例自动归一化。</p>
+      </div>
+      <div class="shot reveal" style="--d:0.3s">
+        <div class="shot-frame"><img src="https://aka.doubaocdn.com/s/sUbwJ1Btdv" alt="看房小助手-我的设置界面"></div>
+        <h5>我的 · 预算与目标地点</h5>
+        <p>预算范围 ¥3000-6000，最多 3 个位置对比参照（公司国贸中心 / 学校中关村）。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Footer · 致谢页 ============ -->
+<footer class="page" id="thanks">
+  <div class="wrap">
+    <div class="f-mark reveal">Thanks for watching</div>
+    <div class="f-cn reveal">期待与您合作</div>
+    <div class="f-tag reveal">Great works never lack admirers</div>
+    <p class="reveal">AI 产品作品集 · 2026 · Designed by <b>佟兵盈</b> · 数据已脱敏</p>
+  </div>
+</footer>
+
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- 烟雾背景：延迟淡入，避免首屏闪烁 ---------- */
+  var blobs = document.querySelectorAll(".blob, .puff");
+  var bgEl = document.querySelector(".bg");
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      blobs.forEach(function(b){ b.classList.add("is-on"); });
+      if(bgEl){ bgEl.classList.add("is-on"); }
+    });
+  });
+
+  /* ---------- 导航滚动态 + 滚动进度条 ---------- */
+  var nav = document.getElementById("nav");
+  var progress = document.getElementById("scrollProgress");
+  var ticking = false;
+
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      nav.classList.toggle("is-scrolled", y > 40);
+      if(max > 0){
+        progress.style.width = ((y / max) * 100) + "%";
+      }
+      applyParallax(y);
+      ticking = false;
+    });
+  }
+
+  /* ---------- 视差滚动：背景烟雾层不同速度错位 ---------- */
+  var layers = Array.prototype.slice.call(document.querySelectorAll("[data-parallax]"));
+
+  function applyParallax(y){
+    for(var i = 0; i < layers.length; i++){
+      var sp = parseFloat(layers[i].getAttribute("data-parallax")) || 0;
+      layers[i].style.transform = "translate3d(0," + (y * sp) + "px,0)";
+    }
+  }
+
+  /* ---------- 滚动揭示动画 ---------- */
+  var reveals = document.querySelectorAll(".reveal");
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add("is-visible");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add("is-visible"); });
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- 画廊分类筛选 ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll("#galleryTabs .g-tab"));
+  var cards = Array.prototype.slice.call(document.querySelectorAll("#galleryGrid .g-card"));
+  tabs.forEach(function(tab){
+    tab.addEventListener("click", function(){
+      tabs.forEach(function(t){ t.classList.remove("is-active"); });
+      tab.classList.add("is-active");
+      var f = tab.getAttribute("data-filter");
+      cards.forEach(function(c){
+        var show = (f === "all") || (c.getAttribute("data-cat") === f);
+        c.classList.toggle("is-hidden", !show);
+      });
+    });
+  });
+
+  /* ============ 奏折采集 · 操作台与监控台 ============ */
+  var zz = {
+    view: "config",
+    cfg: { keyword:"雹", dynasty:"乾隆", yFrom:1736, yTo:1795, limit:40, dMin:1.0, dMax:2.5,
+           count:12, resume:true, flood:true, login:true },
+    list: [],
+    cursor: 0, quota: 0,
+    running: false, paused: false, done: false, docReady: false,
+    timer: null, toastTimer: null
+  };
+  var ZZ_VOLS = ["卷12-0342","卷12-0343","卷12-0344","卷13-0102","卷13-0103",
+                 "卷14-0177","卷14-0178","卷15-0201","卷15-0202","卷15-0203",
+                 "卷16-0119","卷16-0120","卷17-0044","卷17-0045","卷18-0088",
+                 "卷18-0089","卷19-0105","卷19-0106","卷20-0033","卷20-0034"];
+
+  function zzToast(msg){
+    var t = document.getElementById("zzToast");
+    if(!t){ t = document.createElement("div"); t.id = "zzToast"; t.className = "demo-toast";
+      document.body.appendChild(t); }
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(zz.toastTimer);
+    zz.toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 2600);
+  }
+
+  function zzLog(msg, type){
+    var body = document.getElementById("zzLog");
+    var ln = document.createElement("span");
+    ln.className = "ln " + (type || "info");
+    var d = new Date();
+    var pad = function(n){ return (n < 10 ? "0" : "") + n; };
+    ln.textContent = "[" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds()) + "] " + msg;
+    body.appendChild(ln);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function zzMakeList(){
+    var vols = ZZ_VOLS.slice(0, zz.cfg.count);
+    zz.list = vols.map(function(v){
+      return { name: zz.cfg.dynasty + " · 雹灾奏折 · " + v,
+               short: zz.cfg.dynasty + " · " + v, state: "todo" };
+    });
+  }
+
+  function zzRender(){
+    var list = zz.list;
+    var doneCount = list.filter(function(it){ return it.state === "done"; }).length;
+    document.getElementById("zzStatProgress").textContent = zz.cursor + " / " + list.length + " 条";
+    document.getElementById("zzStatQuota").textContent = zz.quota + " / " + zz.cfg.limit;
+    document.getElementById("zzStatCurrent").textContent =
+      zz.cursor < list.length ? list[zz.cursor].short : (zz.done ? "全部完成" : "—");
+    var stateText = zz.done ? "已完成" : (zz.running ? (zz.paused ? "已暂停" : "采集中") : "就绪");
+    document.getElementById("zzStatState").textContent = stateText;
+    document.getElementById("zzListCount").textContent = doneCount + " / " + list.length + " 完成";
+    document.getElementById("zzBar").style.width =
+      (list.length ? (doneCount / list.length) * 100 : 0) + "%";
+    var box = document.getElementById("zzList");
+    box.innerHTML = "";
+    list.forEach(function(it){
+      var row = document.createElement("div");
+      row.className = "run-item" + (it.state === "done" ? " is-done" : (it.state === "doing" ? " is-doing" : ""));
+      var mark = it.state === "done" ? "完成" : (it.state === "doing" ? "处理中" : "待处理");
+      row.innerHTML = '<span class="st"></span><span>' + it.name + '</span><span class="st-tag">' + mark + '</span>';
+      box.appendChild(row);
+    });
+  }
+
+  function zzStart(){
+    if(zz.running && !zz.paused) return;
+    if(zz.done) return;
+    if(zz.list.length === 0){ zzMakeList(); }
+    if(zz.cursor >= zz.list.length){ zzFinish(); return; }
+    zz.running = true; zz.paused = false;
+    var c = zz.cfg;
+    zzLog("开始采集 · 关键词「" + c.keyword + "」 朝代「" + c.dynasty + "」 年份 " + c.yFrom + "-" + c.yTo);
+    if(c.resume){ zzLog("断点续传已开启 · 读取进度文件 progress.json（上次完成 " + zz.cursor + " 条）", "ok"); }
+    if(c.login){ zzLog("登录态已复用 · 浏览器 profile 无需重复登录"); }
+    zzLog("今日额度已用 " + zz.quota + " / " + c.limit + " 条");
+    document.getElementById("zzStartBtn").disabled = true;
+    document.getElementById("zzPauseBtn").disabled = false;
+    document.getElementById("zzPauseBtn").textContent = "暂停";
+    zzRender();
+    zz.timer = setTimeout(zzTick, 700);
+  }
+
+  function zzTick(){
+    if(!zz.running || zz.paused) return;
+    var c = zz.cfg;
+    if(c.flood && Math.random() < 0.18){
+      zzLog("检测到限流弹窗关键词 · 安全等待 2.5s 后继续", "warn");
+      document.getElementById("zzStatState").textContent = "限流等待";
+      setTimeout(function(){
+        if(zz.running && !zz.paused){
+          zzLog("等待结束 · 继续采集", "ok");
+          zz.timer = setTimeout(zzTick, 500);
+        }
+      }, 900);
+      return;
+    }
+    var item = zz.list[zz.cursor];
+    item.state = "doing";
+    zzRender();
+    zzLog("检索命中：" + item.name);
+    setTimeout(function(){
+      item.state = "done";
+      zz.cursor++; zz.quota++;
+      zzLog("截图完成 → 写入进度文件（已完成 " + zz.cursor + " 条）", "ok");
+      var d = (c.dMin + Math.random() * (c.dMax - c.dMin)).toFixed(1);
+      zzLog("随机延时 " + d + "s · 模拟真人节奏");
+      zzRender();
+      if(zz.quota >= c.limit){
+        zzLog("已达每日限额 " + c.limit + " 条 · 自动停止", "warn");
+        zz.running = false;
+        zzLog("今日额度已满，明日自动续跑（断点续传）");
+        document.getElementById("zzStatState").textContent = "已停止 · 额度用尽";
+        document.getElementById("zzStartBtn").disabled = false;
+        document.getElementById("zzStartBtn").textContent = "重新采集";
+        document.getElementById("zzPauseBtn").disabled = true;
+        zzRender();
+        zzToast("已达每日限额，采集自动停止");
+        return;
+      }
+      if(zz.cursor >= zz.list.length){ zzFinish(); return; }
+      zz.timer = setTimeout(zzTick, 750);
+    }, 420);
+  }
+
+  function zzFinish(){
+    zz.running = false; zz.done = true;
+    zzLog("全部 " + zz.list.length + " 条处理完成 · 汇总为 Word 文档", "done");
+    document.getElementById("zzStartBtn").disabled = false;
+    document.getElementById("zzStartBtn").textContent = "重新采集";
+    document.getElementById("zzPauseBtn").disabled = true;
+    document.getElementById("zzPauseBtn").textContent = "暂停";
+    document.getElementById("zzDocBtn").style.display = "";
+    zzRender();
+    zzToast("采集完成，可生成 Word 文档");
+  }
+
+  function zzPauseToggle(){
+    if(zz.running && !zz.paused){
+      zz.paused = true;
+      clearTimeout(zz.timer);
+      zzLog("已暂停 · 进度已保存，可随时继续");
+      document.getElementById("zzPauseBtn").textContent = "继续";
+      zzRender();
+    } else if(zz.running && zz.paused){
+      zz.paused = false;
+      zzLog("继续采集");
+      document.getElementById("zzPauseBtn").textContent = "暂停";
+      zzRender();
+      zz.timer = setTimeout(zzTick, 500);
+    }
+  }
+
+  function zzReset(){
+    clearTimeout(zz.timer);
+    zz.running = false; zz.paused = false; zz.done = false; zz.docReady = false;
+    zz.cursor = 0; zz.quota = 0;
+    zz.list.forEach(function(it){ it.state = "todo"; });
+    document.getElementById("zzStartBtn").disabled = false;
+    document.getElementById("zzStartBtn").textContent = "开始采集";
+    document.getElementById("zzPauseBtn").disabled = true;
+    document.getElementById("zzPauseBtn").textContent = "暂停";
+    document.getElementById("zzDocBtn").style.display = "none";
+    zzLog("已重置 · 断点进度文件保留，下次从第 1 条开始");
+    zzRender();
+  }
+
+  /* 视图切换 */
+  Array.prototype.slice.call(document.querySelectorAll("#demoSwitch .d-tab")).forEach(function(tab){
+    tab.addEventListener("click", function(){
+      Array.prototype.slice.call(document.querySelectorAll("#demoSwitch .d-tab")).forEach(function(t){
+        t.classList.remove("is-active");
+      });
+      tab.classList.add("is-active");
+      var v = tab.getAttribute("data-view");
+      zz.view = v;
+      document.getElementById("view-config").classList.toggle("is-active", v === "config");
+      document.getElementById("view-run").classList.toggle("is-active", v === "run");
+      if(v === "run" && zz.list.length === 0){
+        zzMakeList();
+        zzRender();
+        zzLog("运行监控台就绪 · 请先在检索配置台设置条件，或直接开始采集");
+      }
+    });
+  });
+
+  /* 配置控件绑定 */
+  var cfgEls = {
+    keyword: document.getElementById("cfgKeyword"),
+    dynasty: document.getElementById("cfgDynasty"),
+    yFrom: document.getElementById("cfgYearFrom"),
+    yTo: document.getElementById("cfgYearTo"),
+    limit: document.getElementById("cfgLimit"),
+    dMin: document.getElementById("cfgDelayMin"),
+    dMax: document.getElementById("cfgDelayMax"),
+    count: document.getElementById("cfgCount"),
+    resume: document.getElementById("cfgResume"),
+    flood: document.getElementById("cfgFlood"),
+    login: document.getElementById("cfgLogin")
+  };
+  cfgEls.limit.addEventListener("input", function(){
+    zz.cfg.limit = parseInt(this.value, 10);
+    document.getElementById("cfgLimitVal").textContent = this.value;
+  });
+  cfgEls.dMin.addEventListener("input", function(){
+    zz.cfg.dMin = parseFloat(this.value);
+    document.getElementById("cfgDelayMinVal").textContent = this.value + "s";
+    if(parseFloat(this.value) > zz.cfg.dMax){
+      cfgEls.dMax.value = this.value;
+      zz.cfg.dMax = parseFloat(this.value);
+      document.getElementById("cfgDelayMaxVal").textContent = this.value + "s";
+    }
+  });
+  cfgEls.dMax.addEventListener("input", function(){
+    zz.cfg.dMax = parseFloat(this.value);
+    document.getElementById("cfgDelayMaxVal").textContent = this.value + "s";
+    if(parseFloat(this.value) < zz.cfg.dMin){
+      cfgEls.dMin.value = this.value;
+      zz.cfg.dMin = parseFloat(this.value);
+      document.getElementById("cfgDelayMinVal").textContent = this.value + "s";
+    }
+  });
+  cfgEls.keyword.addEventListener("input", function(){ zz.cfg.keyword = this.value; });
+  cfgEls.dynasty.addEventListener("change", function(){ zz.cfg.dynasty = this.value; });
+  cfgEls.yFrom.addEventListener("change", function(){ zz.cfg.yFrom = parseInt(this.value, 10) || 1736; });
+  cfgEls.yTo.addEventListener("change", function(){ zz.cfg.yTo = parseInt(this.value, 10) || 1795; });
+  cfgEls.count.addEventListener("change", function(){
+    var n = parseInt(this.value, 10) || 12;
+    n = Math.max(4, Math.min(20, n));
+    this.value = n;
+    zz.cfg.count = n;
+  });
+  cfgEls.resume.addEventListener("change", function(){ zz.cfg.resume = this.checked; });
+  cfgEls.flood.addEventListener("change", function(){ zz.cfg.flood = this.checked; });
+  cfgEls.login.addEventListener("change", function(){ zz.cfg.login = this.checked; });
+
+  /* 开始采集（配置台） */
+  document.getElementById("cfgStart").addEventListener("click", function(){
+    zz.cfg.keyword = cfgEls.keyword.value;
+    zz.cfg.dynasty = cfgEls.dynasty.value;
+    zz.cfg.yFrom = parseInt(cfgEls.yFrom.value, 10) || 1736;
+    zz.cfg.yTo = parseInt(cfgEls.yTo.value, 10) || 1795;
+    zz.cfg.limit = parseInt(cfgEls.limit.value, 10) || 40;
+    zz.cfg.count = parseInt(cfgEls.count.value, 10) || 12;
+    zz.cfg.resume = cfgEls.resume.checked;
+    zz.cfg.flood = cfgEls.flood.checked;
+    zz.cfg.login = cfgEls.login.checked;
+    zzMakeList();
+    zzRender();
+    var log = document.getElementById("zzLog");
+    log.innerHTML = "";
+    zzLog("配置已应用 · 检索「" + zz.cfg.keyword + "」 朝代「" + zz.cfg.dynasty + "」 " + zz.cfg.yFrom + "-" + zz.cfg.yTo);
+    document.getElementById("zzStartBtn").disabled = false;
+    document.getElementById("zzStartBtn").textContent = "开始采集";
+    document.getElementById("zzPauseBtn").disabled = true;
+    document.getElementById("zzDocBtn").style.display = "none";
+    // 切换到运行监控台
+    Array.prototype.slice.call(document.querySelectorAll("#demoSwitch .d-tab")).forEach(function(t){
+      t.classList.remove("is-active");
+    });
+    document.querySelector('#demoSwitch .d-tab[data-view="run"]').classList.add("is-active");
+    zz.view = "run";
+    document.getElementById("view-config").classList.remove("is-active");
+    document.getElementById("view-run").classList.add("is-active");
+    zzStart();
+  });
+
+  /* 运行监控台控制按钮 */
+  document.getElementById("zzStartBtn").addEventListener("click", zzStart);
+  document.getElementById("zzPauseBtn").addEventListener("click", zzPauseToggle);
+  document.getElementById("zzResetBtn").addEventListener("click", zzReset);
+  document.getElementById("zzDocBtn").addEventListener("click", function(){
+    zzToast("已生成 demo.docx（示例）· 共 " + zz.list.length + " 条档案汇总");
+  });
+  document.getElementById("zzLogClear").addEventListener("click", function(){
+    document.getElementById("zzLog").innerHTML = "";
+  });
+
+  /* ---------- 移动端导航折叠 ---------- */
+  var toggle = document.getElementById("navToggle");
+  var links = document.getElementById("navLinks");
+  toggle.addEventListener("click", function(){
+    var open = links.style.display === "flex";
+    links.style.display = open ? "" : "flex";
+  });
+
+  /* ---------- 移动端点击导航后收起 ---------- */
+  links.addEventListener("click", function(e){
+    if(e.target.tagName === "A"){
+      links.style.display = "";
+    }
+  });
+
+  /* =========================================================
+     翻页引擎：一屏一页 · 横向侧翻
+     ========================================================= */
+  var stage = document.getElementById("top");
+  var pages = Array.prototype.filter.call(stage.children, function(el){
+    return el.classList && el.classList.contains("page");
+  });
+  var last = pages.length - 1;
+  var cur = 0;
+
+  function applyParallaxPage(idx){
+    for(var i = 0; i < layers.length; i++){
+      var sp = parseFloat(layers[i].getAttribute("data-parallax")) || 0;
+      layers[i].style.transform = "translate3d(" + (-idx * 130 * sp) + "px,0,0)";
+    }
+  }
+
+  function activatePage(p){
+    var rv = p.querySelectorAll(".reveal");
+    rv.forEach(function(el){ el.classList.remove("is-visible"); });
+    void p.offsetWidth;
+    requestAnimationFrame(function(){
+      rv.forEach(function(el){ el.classList.add("is-visible"); });
+    });
+  }
+
+  function goTo(idx, instant){
+    if(idx < 0) idx = 0;
+    if(idx > last) idx = last;
+    cur = idx;
+    var tx = "translate3d(" + (-cur * 100) + "vw,0,0)";
+    if(instant){
+      stage.style.transition = "none";
+      stage.style.transform = tx;
+      void stage.offsetWidth;
+      stage.style.transition = "";
+    } else {
+      stage.style.transform = tx;
+    }
+    var pr = document.getElementById("scrollProgress");
+    if(pr){ pr.style.width = ((cur / last) * 100) + "%"; }
+    document.getElementById("pageCur").textContent = ("0" + (cur + 1)).slice(-2);
+    document.getElementById("pageTotal").textContent = ("0" + (last + 1)).slice(-2);
+    document.getElementById("navPrev").disabled = cur === 0;
+    document.getElementById("navNext").disabled = cur === last;
+    var pid = pages[cur].id ? "#" + pages[cur].id : "#top";
+    if(history.replaceState){ history.replaceState(null, "", pid); }
+    pages[cur].scrollTop = 0;
+    activatePage(pages[cur]);
+    applyParallaxPage(cur);
+  }
+
+  function nextPage(){ goTo(cur + 1); }
+  function prevPage(){ goTo(cur - 1); }
+
+  /* 滚轮：只滚动本页内容（下滑 = 看本页；翻页靠点击） */
+  /* （无 wheel 拦截，.page 自然承接滚轮滚动） */
+
+  /* 触摸：只用于本页内容上下滑动（翻页统一走点击） */
+  /* （无拦截，.page 自然承接触摸滚动） */
+
+  /* 键盘翻页 */
+  document.addEventListener("keydown", function(e){
+    if(e.target && e.target.tagName && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+    if(e.key === "ArrowRight" || e.key === "PageDown"){ nextPage(); }
+    else if(e.key === "ArrowLeft" || e.key === "PageUp"){ prevPage(); }
+  });
+
+  /* 箭头按钮 */
+  document.getElementById("navPrev").addEventListener("click", prevPage);
+  document.getElementById("navNext").addEventListener("click", nextPage);
+
+  /* 顶部导航：点击即翻页 */
+  document.querySelectorAll(".nav-links a").forEach(function(a){
+    a.addEventListener("click", function(e){
+      var href = a.getAttribute("href");
+      if(!href || href.charAt(0) !== "#") return;
+      e.preventDefault();
+      var tgt = document.querySelector(href);
+      var idx = pages.indexOf(tgt);
+      if(idx >= 0) goTo(idx);
+    });
+  });
+
+  /* 初始化：支持 #hash 直达对应页 */
+  var startIdx = 0;
+  if(location.hash){
+    var t0 = document.querySelector(location.hash);
+    if(t0 && pages.indexOf(t0) >= 0) startIdx = pages.indexOf(t0);
+  }
+  goTo(startIdx, true);
+})();
+</script>
+</body>
+</html>
