@@ -1932,7 +1932,7 @@ DELAY_MIN = <span class="nu">1.0</span>    DELAY_MAX = <span class="nu">2.5</spa
     document.getElementById("navPrev").disabled = cur === 0;
     document.getElementById("navNext").disabled = cur === last;
     var pid = pages[cur].id ? "#" + pages[cur].id : "#top";
-    if(history.replaceState){ history.replaceState(null, "", pid); }
+    if(history.replaceState){ history.replaceState(null, "", location.pathname + location.search); }
     pages[cur].scrollTop = 0;
     activatePage(pages[cur]);
     applyParallaxPage(cur);
@@ -1970,11 +1970,10 @@ DELAY_MIN = <span class="nu">1.0</span>    DELAY_MAX = <span class="nu">2.5</spa
     });
   });
 
-  /* 初始化：支持 #hash 直达对应页 */
+  /* 初始化：始终从第一页开始（忽略历史锚点，保证每次进入都是首页） */
   var startIdx = 0;
   if(location.hash){
-    var t0 = document.querySelector(location.hash);
-    if(t0 && pages.indexOf(t0) >= 0) startIdx = pages.indexOf(t0);
+    if(history.replaceState){ history.replaceState(null, "", location.pathname + location.search); }
   }
   goTo(startIdx, true);
 })();
