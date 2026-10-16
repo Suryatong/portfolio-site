@@ -907,6 +907,82 @@ footer .f-tag{
   .run-stats{grid-template-columns:repeat(2,1fr);}
   .run-body{grid-template-columns:1fr;}
 }
+/* 手机窄屏：翻页箭头下移、排版收紧、表格与操作台适配、背景动画降级 */
+@media (max-width:480px){
+  .wrap{padding:0 18px;}
+  .nav{padding:14px 16px;}
+  .nav.is-scrolled{padding:11px 16px;}
+  .nav-brand{font-size:0.98rem;}
+  .nav-links{top:52px;}
+  .nav-links a{padding:14px 20px;font-size:0.88rem;}
+
+  /* 翻页箭头：移到屏幕底部中央并排，不遮挡正文 */
+  .nav-arrow{top:auto;bottom:14px;transform:none;width:42px;height:42px;}
+  .nav-arrow:hover{transform:none;border-color:var(--caramel-300);background:rgba(201,142,86,0.16);}
+  .nav-arrow:active{transform:scale(0.94);}
+  .nav-prev{left:calc(50% - 76px);}
+  .nav-next{right:auto;left:calc(50% + 22px);}
+  .page-count{right:14px;bottom:16px;font-size:0.7rem;}
+  .page-count b{font-size:1.15rem;}
+
+  .panel{padding:54px 0;}
+  .section-head{margin-bottom:36px;}
+  .section-title{font-size:clamp(1.5rem,7.4vw,2rem);}
+  .section-sub{font-size:0.92rem;margin-top:10px;}
+  .section-index{font-size:clamp(3rem,15vw,4.4rem);top:-12px;}
+  .eyebrow{font-size:0.72rem;letter-spacing:0.2em;margin-bottom:14px;gap:8px;}
+  .eyebrow::before{width:24px;}
+
+  .hero{padding-top:104px;padding-bottom:64px;}
+  .hero-eyebrow{font-size:0.76rem;letter-spacing:0.24em;margin-bottom:22px;gap:10px;}
+  .hero-eyebrow::before{width:30px;}
+  .hero h1{font-size:clamp(2.4rem,12vw,3.1rem);}
+  .hero-by{font-size:0.86rem;margin-top:16px;}
+  .hero-mail{font-size:0.78rem;margin-top:14px;}
+
+  .gallery-tabs{gap:8px;margin-bottom:28px;}
+  .g-tab{font-size:0.82rem;padding:7px 14px;}
+  .g-card-body{padding:16px 16px 18px;}
+  .g-card-body h3{font-size:1.04rem;}
+  .g-card-body p{font-size:0.85rem;}
+  .g-code-media{padding:16px 18px;}
+
+  .tob-card{padding:20px 16px;border-radius:14px;}
+  .tob-card h4{font-size:1.08rem;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .pain-list{gap:12px;}
+  .pain-list li{padding:12px 12px;font-size:0.88rem;gap:12px;border-radius:12px;}
+  .pain-list li .pain-n{width:26px;height:26px;font-size:0.8rem;}
+  .solution-flow li{gap:14px;padding:14px 0;}
+  .solution-flow b{font-size:0.95rem;}
+  .solution-flow span{font-size:0.85rem;}
+  .param-table-wrap{margin-top:22px;max-height:420px;border-radius:12px;}
+  .param-table th,.param-table td{padding:10px 12px;font-size:0.8rem;}
+  .arch-2col{gap:22px;margin-top:36px;}
+
+  .half-title{font-size:1.18rem;margin-bottom:18px;gap:10px;}
+  .solve-list li{font-size:0.9rem;}
+  .shot{padding:14px;border-radius:14px;}
+  .shot h5{font-size:0.96rem;}
+  .shot p{font-size:0.82rem;}
+  .tools-pain,.biz-bg{font-size:0.9rem;margin-top:22px;gap:12px;}
+
+  .demo-head{flex-direction:column;align-items:flex-start;gap:8px;}
+  .demo-title{font-size:0.95rem;}
+  .d-tab{padding:7px 12px;font-size:0.78rem;}
+  .run-stats{gap:8px;}
+  .r-stat{padding:10px 8px;}
+  .r-stat b{font-size:1rem;}
+
+  /* 背景动画降级：隐藏细烟雾丝、降低模糊，保证流畅 */
+  .puff{display:none;}
+  .blob{filter:blur(44px);}
+  .blob{animation-duration:52s,20s;}
+  .bg-base{animation-duration:70s,20s;}
+
+  footer .f-mark{font-size:clamp(1.5rem,8vw,2.1rem);}
+  footer .f-cn{font-size:1.1rem;}
+  footer p{font-size:0.8rem;letter-spacing:0.08em;}
+}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto;}
   .reveal{opacity:1;transform:none;transition:none;}
